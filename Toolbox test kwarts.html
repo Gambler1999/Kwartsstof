@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lammers Beton - Toolbox Kwartsstof</title>
+    <style>
+        :root {
+            --bg-color: #121214;
+            --card-bg: #1a1a1e;
+            --text-color: #e4e4e7;
+            --safety-blue: #0077b6;
+            --hazard-amber: #f77f00;
+            --success-green: #38b000;
+            --border-color: #2d2d34;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-top: 6px solid var(--safety-blue);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+        }
+
+        .lang-selector {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .lang-btn {
+            background: #252529;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .lang-btn.active {
+            background: var(--safety-blue);
+            border-color: var(--safety-blue);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 { font-size: 22px; color: #fff; margin: 0; text-transform: uppercase; }
+        .header p { color: var(--hazard-amber); margin: 5px 0 0 0; font-weight: bold; }
+
+        .section-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--safety-blue);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .video-launch-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #252529;
+            border: 2px dashed var(--hazard-amber);
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #fff;
+            transition: background 0.2s;
+        }
+
+        .video-launch-btn:hover { background: #2d2d34; }
+        .video-launch-btn .play-icon { font-size: 28px; color: var(--hazard-amber); }
+        .video-launch-btn strong { font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
+
+        .quiz-option {
+            display: block;
+            background: #252529;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            margin-top: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="radio"] { margin-right: 10px; accent-color: var(--safety-blue); }
+        input[type="text"], select, textarea {
+            width: 100%; background: #252529; border: 1px solid var(--border-color);
+            color: #fff; padding: 10px; border-radius: 4px; box-sizing: border-box; margin-top: 5px;
+            font-family: inherit;
+        }
+        textarea { resize: vertical; }
+
+        .btn {
+            width: 100%; background: #3a3a42; color: #8a8a93; border: none;
+            padding: 15px; font-size: 16px; font-weight: bold; text-transform: uppercase;
+            border-radius: 4px; cursor: not-allowed; margin-top: 10px;
+        }
+
+        .btn.active { background: var(--success-green); color: #fff; cursor: pointer; }
+        .feedback { margin-top: 10px; font-weight: bold; font-size: 14px; display: none; }
+        .feedback.correct { color: var(--success-green); display: block; }
+        .feedback.wrong { color: #d90429; display: block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Uitgebreide Taalschakelaar met alle 7 talen -->
+    <div class="lang-selector">
+        <button class="lang-btn active" onclick="switchLanguage('nl')">NL</button>
+        <button class="lang-btn" onclick="switchLanguage('en')">EN</button>
+        <button class="lang-btn" onclick="switchLanguage('pl')">PL</button>
+        <button class="lang-btn" onclick="switchLanguage('de')">DE</button>
+        <button class="lang-btn" onclick="switchLanguage('uk')">UK</button>
+        <button class="lang-btn" onclick="switchLanguage('hu')">HU</button>
+        <button class="lang-btn" onclick="switchLanguage('pt')">PT</button>
+    </div>
+
+    <div class="header">
+        <h1 id="txt-title">Toolbox: Gevaren van Kwartsstof</h1>
+        <p id="txt-subtitle">⚠️ VERPLICHTE VEILIGHEIDSINSTRUCTIE ⚠️</p>
+    </div>
+
+    <!-- 1. Identificatie -->
+    <div class="section-card">
+        <h3 id="txt-sec1">1. Uw Gegevens</h3>
+        <label id="txt-label-name">Volledige naam:</label>
+        <input type="text" id="emp_name" oninput="checkQuiz()">
+        
+        <label id="txt-label-dept" style="display:block; margin-top:10px;">Locatie:</label>
+        <select id="emp_dept" onchange="checkQuiz()">
+            <option value="">-- Select --</option>
+            <option value="Trancheeweg">Trancheeweg</option>
+            <option value="Oude Graaf">Oude Graaf</option>
+            <option value="Lozerweg">Lozerweg</option>
+        </select>
+    </div>
+
+    <!-- 2. Video Sectie -->
+    <div class="section-card" style="border-left-color: var(--hazard-amber);">
+        <h3 id="txt-sec2">2. Bekijk de Video</h3>
+        <p id="txt-video-p">Klik op de onderstaande knop om de video over Kwartsstof op YouTube te openen en te bekijken. Dit is verplicht voor het beantwoorden van de vragen.</p>
+        
+        <!-- HIER STAAT JOUW JUISTE VIDEOLINK (DENK AAN VERVANGEN VAN ID ZOALS BESPROKEN) -->
+        <a href="https://www.youtube.com/watch?v=tA5eZxtd2GI" target="_blank" class="video-launch-btn">
+            <span class="play-icon">▶</span>
+            <strong id="txt-video-btn">Bewust Veilig Toolbox: 'Kwartsstof' (2026)</strong>
+        </a>
+    </div>
+
+    <!-- 3. Kwartsstof bij Lammers Beton -->
+    <div class="section-card" style="border-left-color: var(--safety-blue);">
+        <h3 id="txt-sec3-new">3. Kwartsstof bij Lammers Beton</h3>
+        <div id="txt-body-new">
+            <p>Kwartsstof komt bij ons vrij bij het droog bewerken van uitgehard beton: zagen, slijpen, boren, frezen en het nabewerken of repareren van elementen, onder andere op het tasveld. Ook droog vegen en schoonblazen met perslucht brengt stof in de lucht. Kwartsstof is kankerverwekkend en niet of nauwelijks zichtbaar.</p>
+            <p>De wettelijke grenswaarde is 0,075 mg/m3 respirabel kwarts, gemeten als gemiddelde over een werkdag van 8 uur. Deze waarde wordt naar verwachting verlaagd. Het uitgangspunt is daarom altijd: blootstelling zo laag mogelijk houden en streven naar nul. Ter illustratie hoe snel die grens wordt overschreden: droog vegen geeft al een 13 keer te hoge blootstelling, boren 33 keer, en frezen, schuren en slijpen tot 200 keer de grenswaarde.</p>
+            <p><strong>Onze maatregelen, in deze volgorde:</strong></p>
+            <ol>
+                <li><strong>Beperk bewerkingen.</strong> Maatvoering en sparingen worden zoveel mogelijk in de mal gemaakt, niet achteraf gezaagd of geboord.</li>
+                <li><strong>Werk nat of met afzuiging.</strong> Gebruik gereedschap met watertoevoer of geintegreerde stofafzuiging. Opruimen doe je met de industriele stofzuiger, nooit door droog vegen of met perslucht.</li>
+                <li><strong>Houd afstand.</strong> Voer stofvormende werkzaamheden zoveel mogelijk uit op afstand van collega's.</li>
+                <li><strong>Adembescherming.</strong> Bij droge bewerking of wanneer afzuiging onvoldoende is, draag je het door Lammers Beton verstrekte masker met P3-filter. Een goede pasvorm is verplicht. Gelaatsbeharing op de afdichtrand maakt het masker onbetrouwbaar en is daarom niet toegestaan bij maskergebruik.</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- 4. Vraag 1 -->
+    <div class="section-card">
+        <h3 id="txt-sec3">4. Vraag 1 (Gevaren & PBM)</h3>
+        <p id="txt-q1-p">Kwartsstof (Silica Dust) is tot 100 keer kleiner dan een zandkorrel. Wanneer moet u verplicht adembescherming (PBM) dragen?</p>
+        <label class="quiz-option"><input type="radio" name="q1" value="wrong" onchange="checkQuiz()"> <span id="txt-q1-o1">Alleen als ik de stofwolken met het blote oog kan zien.</span></label>
+        <label class="quiz-option"><input type="radio" name="q1" value="correct" onchange="checkQuiz()"> <span id="txt-q1-o2">Altijd wanneer er beton bewerkt wordt waarbij stof vrijkomt, omdat de gevaarlijkste deeltjes onzichtbaar zijn.</span></label>
+        <div id="feedback-q1" class="feedback"></div>
+    </div>
+
+    <!-- 5. Vraag 2 -->
+    <div class="section-card">
+        <h3 id="txt-sec4">5. Vraag 2 (Omgeving)</h3>
+        <p id="txt-q2-p">U bent zelf niet aan het zagen, maar een collega vlak naast u op het tasveld is een betonelement aan het nabewerken waarbij stof vrijkomt. Wat doet u?</p>
+        <label class="quiz-option"><input type="radio" name="q2" value="wrong" onchange="checkQuiz()"> <span id="txt-q2-o1">Niets, ik ben zelf niet aan het werk met de machine dus ik loop geen risico.</span></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="correct" onchange="checkQuiz()"> <span id="txt-q2-o2">Ik houd mijn omgeving scherp in de gaten, bewaar afstand en zet direct mijn adembescherming op.</span></label>
+        <div id="feedback-q2" class="feedback"></div>
+    </div>
+
+    <!-- 6. Vraag 3 -->
+    <div class="section-card">
+        <h3 id="txt-sec5">6. Vraag 3 (Elkaar Aanspreken)</h3>
+        <p id="txt-q3-p">U ziet dat een collega op het tasveld beton aan het bewerken is, maar hij is vergeten zijn adembescherming (PBM) op te zetten. Wat doet u?</p>
+        <label class="quiz-option"><input type="radio" name="q3" value="wrong" onchange="checkQuiz()"> <span id="txt-q3-o1">Ik zeg niks. Het is zijn eigen verantwoordelijkheid en zijn eigen gezondheid.</span></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="correct" onchange="checkQuiz()"> <span id="txt-q3-o2">Ik spreek mijn collega direct aan, herinner hem aan het gevaar en vraag hem om zijn adembescherming op te zetten. Veiligheid doen we samen.</span></label>
+        <div id="feedback-q3" class="feedback"></div>
+    </div>
+
+    <!-- Opmerkingen open tekstveld -->
+    <div class="section-card" style="border-left-color: var(--success-green);">
+        <label id="txt-label-comments" for="emp_comments"><strong>Heeft u vragen of opmerkingen over dit onderwerp?</strong><br>Uw vraag wordt binnen een week beantwoord door de KAM-afdeling.</label>
+        <textarea id="emp_comments" rows="3" placeholder="..."></textarea>
+    </div>
+
+    <button id="submitBtn" class="btn" disabled onclick="submitToolbox()">Toolbox Aftekenen</button>
+</div>
+
+<script>
+const docData = {
+    nl: {
+        title: "Toolbox: Gevaren van Kwartsstof", subtitle: "⚠️ VERPLICHTE VEILIGHEIDSINSTRUCTIE ⚠️",
+        sec1: "1. Uw Gegevens", labelName: "Volledige naam:", labelDept: "Locatie:",
+        sec2: "2. Bekijk de Video", videoP: "Klik op de onderstaande knop om de video over Kwartsstof op YouTube te openen en te bekijken. Dit is verplicht voor het beantwoorden van de vragen.",
+        videoBtn: "Bewust Veilig Toolbox: 'Kwartsstof' (2026)",
+        sec3_new: "3. Kwartsstof bij Lammers Beton",
+        body_new: `<p>Kwartsstof komt bij ons vrij bij het droog bewerken van uitgehard beton: zagen, slijpen, boren, frezen en het nabewerken of repareren van elementen, onder andere op het tasveld. Ook droog vegen en schoonblazen met perslucht brengt stof in de lucht. Kwartsstof is kankerverwekkend en niet of nauwelijks zichtbaar.</p>
+                   <p>De wettelijke grenswaarde is 0,075 mg/m3 respirabel kwarts, gemeten als gemiddelde over een werkdag van 8 uur. Deze waarde wordt naar verwachting verlaagd. Het uitgangspunt is daarom altijd: blootstelling zo laag mogelijk houden en streven naar nul. Ter illustratie hoe snel die grens wordt overschreden: droog vegen geeft al een 13 keer te hoge blootstelling, boren 33 keer, en frezen, schuren en slijpen tot 200 keer de grenswaarde.</p>
+                   <p><strong>Onze maatregelen, in deze volgorde:</strong></p>
+                   <ol><li><strong>Beperk bewerkingen.</strong> Maatvoering en sparingen worden zoveel mogelijk in de mal gemaakt, niet achteraf gezaagd of geboord.</li><li><strong>Werk nat of met afzuiging.</strong> Gebruik gereedschap met watertoevoer of geintegreerde stofafzuiging. Opruimen doe je met de industriele stofzuiger, nooit door droog vegen of met perslucht.</li><li><strong>Houd afstand.</strong> Voer stofvormende werkzaamheden zoveel mogelijk uit op afstand van collega's.</li><li><strong>Adembescherming.</strong> Bij droge bewerking of wanneer afzuiging onvoldoende is, draag je het door Lammers Beton verstrekte masker met P3-filter. Een goede pasvorm is verplicht. Gelaatsbeharing op de afdichtrand maakt het masker onbetrouwbaar en is daarom niet toegestaan bij maskergebruik.</li></ol>`,
+        sec3: "4. Vraag 1 (Gevaren & PBM)", q1P: "Kwartsstof is tot 100 keer kleiner dan een zandkorrel. Wanneer moet u verplicht adembescherming (PBM) dragen?",
+        q1o1: "Alleen als ik de stofwolken met het blote oog kan zien.", q1o2: "Altijd wanneer er beton bewerkt wordt waarbij stof vrijkomt, omdat de gevaarlijkste deeltjes onzichtbaar zijn.",
+        sec4: "5. Vraag 2 (Omgeving)", q2P: "U bent zelf niet aan het zagen, maar een collega vlak naast u op het tasveld bewerkt beton waarbij stof vrijkomt. Wat doet u?",
+        q2o1: "Niets, ik werk zelf niet met de machine dus ik loop geen risico.", q2o2: "Ik houd mijn omgeving in de gaten, bewaar afstand en zet direct mijn adembescherming op.",
+        sec5: "6. Vraag 3 (Elkaar Aanspreken)", q3P: "U ziet dat een collega op het tasveld beton aan het bewerken is, maar hij is vergeten zijn adembescherming (PBM) op te zetten. Wat doet u?",
+        q3o1: "Ik zeg niks. Het is zijn eigen verantwoordelijkheid en zijn eigen gezondheid.", q3o2: "Ik spreek mijn collega direct aan, herinner hem aan het gevaar en vraag hem om zijn adembescherming op te zetten. Veiligheid doen we samen.",
+        labelComments: "<strong>Heeft u vragen of opmerkingen over dit onderwerp?</strong><br>Uw vraag wordt binnen een week beantwoord door de KAM-afdeling.",
+        btn: "Toolbox Aftekenen", correct: "✓ Correct!", wrong: "❌ Onjuist. Heroverweeg de veiligheidsregels.", alert: "Toolbox succesvol afgetekend!"
+    },
+    en: {
+        title: "Toolbox: Dangers of Silica Dust", subtitle: "⚠️ MANDATORY SAFETY INSTRUCTION ⚠️",
+        sec1: "1. Your Details", labelName: "Full name:", labelDept: "Location:",
+        sec2: "2. Watch the Video", videoP: "Click the button below to open and watch the video about Silica Dust on YouTube. This is required to answer the questions.",
+        videoBtn: "Conscious Safety Toolbox: 'Silica Dust' (2026)",
+        sec3_new: "3. Silica Dust at Lammers Beton",
+        body_new: `<p>Silica dust is released at our site during the dry processing of hardened concrete: sawing, grinding, drilling, milling, and finishing or repairing elements, including on the yard. Dry sweeping and blowing clean with compressed air also release dust into the air. Silica dust is carcinogenic and virtually invisible.</p>
+                   <p>The legal limit is 0.075 mg/m3 respirable silica, measured as an average over an 8-hour workday. This value is expected to be reduced. The starting point is therefore always: keep exposure as low as possible and strive for zero. To illustrate how quickly this limit is exceeded: dry sweeping already gives 13 times too high exposure, drilling 33 times, and milling, sanding, and grinding up to 200 times the limit value.</p>
+                   <p><strong>Our measures, in this order:</strong></p>
+                   <ol><li><strong>Limit operations.</strong> Dimensions and recesses are made in the mold as much as possible, not sawn or drilled afterwards.</li><li><strong>Work wet or with extraction.</strong> Use tools with water supply or integrated dust extraction. Clean up using the industrial vacuum cleaner, never by dry sweeping or compressed air.</li><li><strong>Keep distance.</strong> Perform dust-generating work as far away from colleagues as possible.</li><li><strong>Respiratory protection.</strong> During dry processing or when extraction is insufficient, wear the P3 filter mask provided by Lammers Beton. A proper fit is mandatory. Facial hair on the sealing edge makes the mask unreliable and is therefore not permitted when using a mask.</li></ol>`,
+        sec3: "4. Question 1 (Dangers & PPE)", q1P: "Silica dust is up to 100 times smaller than a grain of sand. When must you wear respiratory protection?",
+        q1o1: "Only when I can visually see the dust clouds with my own eyes.", q1o2: "Always when concrete is being processed and dust is released, because the most dangerous particles are invisible.",
+        sec4: "5. Question 2 (Surroundings)", q2P: "You are not cutting, but a colleague right next to you on the yard is processing concrete, releasing dust. What do you do?",
+        q2o1: "Nothing, I am not operating the machine myself so I am not at risk.", q2o2: "I keep a close eye on my surroundings, keep my distance, and immediately put on my PPE.",
+        sec5: "6. Question 3 (Accountability)", q3P: "You notice a colleague on the yard processing concrete, but he forgot to wear his respiratory protection (PPE). What do you do?",
+        q3o1: "I say nothing. It is his own responsibility and health.", q3o2: "I address my colleague directly, remind him of the danger, and ask him to put on his protection. Safety is a team effort.",
+        labelComments: "<strong>Do you have any questions or comments about this topic?</strong><br>Your question will be answered within a week by the QHSE department.",
+        btn: "Sign off Toolbox", correct: "✓ Correct!", wrong: "❌ Incorrect. Please reconsider safety protocols.", alert: "Toolbox successfully signed off!"
+    },
+    pl: {
+        title: "Toolbox: Zagrożenia pyłem krzemionkowym", subtitle: "⚠️ OBOWIĄZKOWA INSTRUKCJA BEZPIECZEŃSTWA ⚠️",
+        sec1: "1. Twoje dane", labelName: "Imię i nazwisko:", labelDept: "Lokalizacja:",
+        sec2: "2. Obejrzyj wideo", videoP: "Kliknij poniższy przycisk, aby otworzyć i obejrzeć film o pyłach krzemionkowych na YouTube. Jest to wymagane, aby odpowiedzieć na pytania.",
+        videoBtn: "Skrzynka Narzędziowa Świadomego Bezpieczeństwa: 'Pył Krzemionkowy' (2026)",
+        sec3_new: "3. Pył krzemionkowy w Lammers Beton",
+        body_new: `<p>Pył krzemionkowy uwalnia się u nas podczas obróbki na sucho stwardniałego betonu: cięcia, szlifowania, wiercenia, frezowania oraz wykańczania lub naprawy elementów, m.in. na placu składowym. Zamiatanie na sucho i przedmuchiwanie sprężonym powietrzem również unosi pył w powietrze. Pył krzemionkowy jest rakotwórczy i praktycznie niewidoczny.</p>
+                   <p>Ustawowy limit wynosi 0,075 mg/m3 wdychanej krzemionki, mierzony jako średnia z 8-godzinnego dnia pracy. Oczekuje się, że limit ten zostanie obniżony. Dlatego zasada jest zawsze jedna: utrzymywać ekspozycję na jak najniższym poziomie i dążyć do zera. Aby zilustrować, jak szybko limit ten zostaje przekroczony: zamiatanie na sucho daje już 13-krotnie za wysoką ekspozycję, wiercenie 33-krotnie, a frezowanie, piaskowanie i szlifowanie aż do 200 razy przekracza limit.</p>
+                   <p><strong>Nasze środki, w następującej kolejności:</strong></p>
+                   <ol><li><strong>Ograniczaj obróbkę.</strong> Wymiary i otwory są wykonywane w miarę możliwości w formie, a nie wycinane lub wiercone później.</li><li><strong>Pracuj na mokro lub z odsysaniem.</strong> Używaj narzędzi z dopływem wody lub zintegrowanym odsysaniem pyłu. Sprzątaj za pomocą odkurzacza przemysłowego, nigdy przez zamiatanie na sucho lub sprężonym powietrzem.</li><li><strong>Zachowaj dystans.</strong> Prace pylące wykonuj jak najdalej od kolegów.</li><li><strong>Ochrona dróg oddechowych.</strong> Podczas obróbki na sucho lub gdy odsysanie jest niewystarczające, noś maskę z filtrem P3 dostarczoną przez Lammers Beton. Prawidłowe dopasowanie jest obowiązkowe. Zarost na krawędzi uszczelniającej sprawia, że maska jest niezaufana i dlatego jest niedozwolony podczas korzystania z maski.</li></ol>`,
+        sec3: "4. Pytanie 1 (Zagrożenia i ŚOI)", q1P: "Pył krzemionkowy jest do 100 razy mniejszy od ziarnka piasku. Kiedy należy obowiązkowo stosować ochronę dróg oddechowych?",
+        q1o1: "Tylko wtedy, gdy widzę chmury pyłu gołym okiem.", q1o2: "Zawsze, gdy obrabiany jest beton i uwalnia się pył, ponieważ najniebezpieczniejsze cząsteczki są niewidoczne.",
+        sec4: "5. Pytanie 2 (Otoczenie)", q2P: "Sam nie tniesz, ale kolega obok Ciebie na placu obrabia beton, pyląc. Co robisz?",
+        q2o1: "Nic, sam nie obsługuję maszyny, więc nie jestem zagrożony.", q2o2: "Uważnie obserwuję otoczenie, zachowuję bezpieczną odległość i natychmiast zakładam maskę.",
+        sec5: "6. Pytanie 3 (Zwracanie uwagi)", q3P: "Zauważasz, że kolega na placu obrabia beton, ale zapomniał założyć ochrony dróg oddechowych (ŚOI). Co robisz?",
+        q3o1: "Nic nie mówię. To jego własna odpowiedzialność i zdrowie.", q3o2: "Bezpośrednio zwracam uwagę koledze, przypominam o zagrożeniu i proszę o założenie maski. Bezpieczeństwo to wspólna sprawa.",
+        labelComments: "<strong>Czy masz jakieś pytania lub uwagi na ten temat?</strong><br>Twoje pytanie zostanie rozpatrzone w ciągu tygodnia przez dział BHP.",
+        btn: "Podpisz Toolbox", correct: "✓ Właściwie!", wrong: "❌ Nieprawidłowy. Przemyśl zasady bezpieczeństwa.", alert: "Toolbox został pomyślnie podpisany!"
+    },
+    de: {
+        title: "Toolbox: Gefahren von Quarzstaub", subtitle: "⚠️ OBLIGATORISCHE SICHERHEITSUNTERWEISUNG ⚠️",
+        sec1: "1. Ihre Daten", labelName: "Vollständiger Name:", labelDept: "Standort:",
+        sec2: "2. Video ansehen", videoP: "Klicken Sie auf die Schaltfläche unten, um das Video über Quarzstaub auf YouTube zu öffnen und anzusehen. Dies ist für die Beantwortung der Fragen erforderlich.",
+        videoBtn: "Bewust Veilig Toolbox: 'Kwartsstof' (2026)",
+        sec3_new: "3. Quarzstaub bei Lammers Beton",
+        body_new: `<p>Quarzstaub wird bei uns bei der trockenen Bearbeitung von Festbeton freigesetzt: Sägen, Schleifen, Bohren, Fräsen sowie Nachbearbeiten oder Reparieren von Elementen, unter anderem auf dem Lagerplatz. Auch trockenes Fegen und Abblasen mit Druckluft bringt Staub in die Luft. Quarzstaub ist krebserregend und kaum oder gar nicht sichtbar.</p>
+                   <p>Der gesetzliche Grenzwert beträgt 0,075 mg/m3 einatembarer Quarzstaub, gemessen als Mittelwert über einen 8-Stunden-Arbeitstag. Dieser Wert wird voraussichtlich gesenkt. Ziel ist daher immer: Exposition so gering wie möglich halten und Null anstreben. Zur Veranschaulichung, wie schnell diese Grenze überschritten wird: Trockenes Fegen führt bereits zu einer 13-fach zu hohen Exposition, Bohren zu einer 33-fachen und Fräsen, Schleifen und Sägen zu einer bis zu 200-fachen Überschreitung des Grenzwerts.</p>
+                   <p><strong>Unsere Maßnahmen, in dieser Reihenfolge:</strong></p>
+                   <ol><li><strong>Bearbeitungen begrenzen.</strong> Maße und Aussparungen werden so weit wie möglich in der Schalung hergestellt, nicht nachträglich gesägt oder gebohrt.</li><li><strong>Nass oder mit Absaugung arbeiten.</strong> Werkzeuge mit Wasserzufuhr oder integrierter Staubabsaugung verwenden. Reinigung erfolgt mit dem Industriestaubsauger, niemals durch trockenes Fegen oder mit Druckluft.</li><li><strong>Abstand halten.</strong> Staubentwickelnde Arbeiten so weit wie möglich entfernt von Kollegen ausführen.</li><li><strong>Atemschutz.</strong> Bei trockener Bearbeitung oder unzureichender Absaugung ist die von Lammers Beton bereitgestellte Maske mit P3-Filter zu tragen. Eine korrekte Passform ist obligatorisch. Gesichtsbehaarung im Dichtbereich macht die Maske unzuverlässig und ist daher bei Maskengebrauch nicht gestattet.</li></ol>`,
+        sec3: "4. Frage 1 (Gefahren & PSA)", q1P: "Quarzstaub ist bis zu 100-mal kleiner als ein Sandkorn. Wann müssen Sie zwingend Atemschutz (PSA) tragen?",
+        q1o1: "Nur wenn ich die Staubwolken mit bloßem Auge sehen kann.", q1o2: "Immer wenn Beton bearbeitet wird und Staub freigesetzt wird, da die gefährlichsten Partikel unsichtbar sind.",
+        sec4: "5. Frage 2 (Umgebung)", q2P: "Sie sägen selbst nicht, aber ein Kollege direkt neben Ihnen auf dem Lagerplatz bearbeitet Beton, wobei Staub freigesetzt wird. Was tun Sie?",
+        q2o1: "Nichts, ich bediene die Maschine nicht selbst, also bestehe ich kein Risiko.", q2o2: "Ich beobachte meine Umgebung genau, halte Abstand und setze sofort meinen Atemschutz auf.",
+        sec5: "6. Frage 3 (Kollegen ansprechen)", q3P: "Sie bemerken, dass ein Kollege auf dem Lagerplatz Beton bearbeitet, aber vergessen hat, seinen Atemschutz (PSA) aufzusetzen. Was tun Sie?",
+        q3o1: "Ich sage nichts. Es ist seine eigene Verantwortung und seine eigene Gesundheit.", q3o2: "Ich spreche meinen Kollegen direkt an, erinnere ihn an die Gefahr und bitte ihn, seinen Atemschutz aufzusetzen. Sicherheit schaffen wir gemeinsam.",
+        labelComments: "<strong>Haben Sie Fragen oder Anmerkungen zu diesem Thema?</strong><br>Ihre Frage wird innerhalb einer Woche von der Arbeitsschutz-Abteilung beantwortet.",
+        btn: "Toolbox Unterzeichnen", correct: "✓ Richtig!", wrong: "❌ Falsch. Bitte überdenken Sie die Sicherheitsregeln.", alert: "Toolbox erfolgreich unterzeichnet!"
+    },
+    uk: {
+        title: "Toolbox: Небезпека кварцового пилу", subtitle: "⚠️ ОБОВ'ЯЗКОВИЙ ІНСТРУКТАЖ З БЕЗПЕКИ ⚠️",
+        sec1: "1. Ваші дані", labelName: "Повне ім'я:", labelDept: "Локація:",
+        sec2: "2. Перегляньте відео", videoP: "Натисніть кнопку нижче, щоб відкрити та переглянути відео про кварцовий пил на YouTube. Це обов’язково для відповіді на запитання.",
+        videoBtn: "Bewust Veilig Toolbox: 'Kwartsstof' (2026)",
+        sec3_new: "3. Кварцовий пил у Lammers Beton",
+        body_new: `<p>Кварцовий пил виділяється у нас при сухій обробці затверділого бетону: різанні, шліфуванні, свердлінні, фрезеруванні, а також доопрацюванні або ремонті елементів, зокрема на майданчику складання. Сухе замітання та обдування стисненим повітрям також піднімають пил у повітря. Кварцовий пил є канцерогенним і практично невидимим.</p>
+                   <p>Законодавча межа становить 0,075 мг/м3 вдихуваного кварцу, виміряна як середня величина за 8-годинний робочий день. Очікується, що це значення буде знижено. Тому головне правило: тримати рівень впливу якомога нижчим і прагнути до нуля. Для ілюстрації того, як швидко перевищується ця межа: сухе замітання вже дає в 13 разів зависокий рівень впливу, свердління — у 33 рази, а фрезерування, шліфування та різання — до 200 разів вище граничного значення.</p>
+                   <p><strong>Наші заходи безпеки у такому порядку:</strong></p>
+                   <ol><li><strong>Обмежуйте обробку.</strong> Розміри та отвори максимально закладаються у формі, а не вирізаються чи свердляться згодом.</li><li><strong>Працюйте на мокру або з витяжкою.</strong> Використовуйте інструменти з подачею води або вбудованим відсмоктуванням пилу. Прибирання здійснюється промисловим пилососом, ні в якому разі не сухим замітанням чи стисненим повітрям.</li><li><strong>Тримайте дистанцію.</strong> Виконуйте пилоутворюючі роботи якомога далі від колег.</li><li><strong>Захист органів дихання.</strong> При сухій обробці або недостатній витяжці обов'язково носіть маску з фільтром P3, надану Lammers Beton. Правильне прилягання є обов'язковим. Волосся на обличчі в зоні ущільнення робить маску ненадійною, тому при використанні маски воно не допускається.</li></ol>`,
+        sec3: "4. Запитання 1 (Небезпека та ЗІЗ)", q1P: "Кварцовий пил у 100 разів менший за піщинку. Коли ви зобов'язані носити засоби захисту органів дихання (ЗІЗ)?",
+        q1o1: "Тільки якщо я бачу хмари пилу неозброєним оком.", q1o2: "Завжди, коли обробляється бетон і виділяється пил, оскільки найнебезпечніші частинки є невидимими.",
+        sec4: "5. Запитання 2 (Оточення)", q2P: "Ви самі не ріжете, але колега поруч із вами на майданчику обробляє бетон, через що виділяється пил. Що ви робите?",
+        q2o1: "Нічого, я сам не працюю з машиною, тому не ризикую.", q2o2: "Я уважно стежу за оточенням, тримаю дистанцію і негайно одягаю захисну маску.",
+        sec5: "6. Запитання 3 (Зауваження колегам)", q3P: "Ви помітили, що колега на майданчику обробляє бетон, але забув одягнути захисну маску (ЗІЗ). Що ви робите?",
+        q3o1: "Нічого не кажу. Це його власна відповідальність і його здоров'я.", q3o2: "Я звертаюся до колеги напряму, нагадую про небезпеку і прошу одягнути захисну маску. Безпека — це спільна справа.",
+        labelComments: "<strong>Маєте запитання чи зауваження з цієї теми?</strong><br>Відділ охорони праці відповість на ваше запитання протягом тижня.",
+        btn: "Підписати інструктаж", correct: "✓ Правильно!", wrong: "❌ Неправильно. Будь ласка, перегляньте правила безпеки.", alert: "Інструктаж успішно підписано!"
+    },
+    hu: {
+        title: "Toolbox: A kvarcpor veszélyei", subtitle: "⚠️ KÖTELEZŐ BIZTONSÁGI OKTATÁS ⚠️",
+        sec1: "1. Az Ön adatai", labelName: "Teljes név:", labelDept: "Helyszín:",
+        sec2: "2. Videó megtekintése", videoP: "Kattintson az alábbi gombra a kvarcporról szóló videó megnyitásához és megtekintéséhez a YouTube-on. Ez kötelező a kérdések megválaszolásához.",
+        videoBtn: "Bewust Veilig Toolbox: 'Kwartsstof' (2026)",
+        sec3_new: "3. Kvarcpor a Lammers Betonnál",
+        body_new: `<p>Kvarcpor a megkeményedett beton száraz megmunkálásakor szabadul fel nálunk: vágás, csiszolás, fúrás, marás, valamint az elemek utómunkálatai vagy javítása során, többek között a tároló pátiumban. A száraz felseprés és a sűrített levegővel való tisztítás szintén port juttat a levegőbe. A kvarcpor rákkeltő, és alig vagy egyáltalán nem látható.</p>
+                   <p>A törvényi határérték 0,075 mg/m3 belélegezhető kvarc, 8 órás munkanap átlagában mérve. Ez az érték várhatóan csökkenni fog. A kiindulópont ezért mindig: a kitettséget a lehető legalacsonyabb szinten tartani és a nullára törekedni. Annak szemléltetésére, hogy milyen gyorsan túllépjük ezt a határt: a száraz felseprés már 13-szorosan, a fúrás 33-szorosan, a marás, csiszolás és vágás pedig akár 200-szorosan is meghaladja a határértéket.</p>
+                   <p><strong>Intézkedéseink, ebben a sorrendben:</strong></p>
+                   <ol><li><strong>Műveletek korlátozása.</strong> A méretezések és nyílások lehetőség szerint a zsaluban készülnek, nem utólag vágják vagy fúrják őket.</li><li><strong>Nedves munkavégzés vagy elszívás.</strong> Használjon vízadagolós vagy beépített porelszívóval ellátott szerszámokat. A takarítás ipari porszívóval történik, soha nem száraz felsepréssel vagy sűrített levegővel.</li><li><strong>Távolságtartás.</strong> A porképző munkákat a lehető legtávolabb végezze a kollégáktól.</li><li><strong>Légzésvédelem.</strong> Száraz megmunkáláskor, vagy ha az elszívás nem elegendő, viselje a Lammers Beton által biztosított P3 szűrős maszkot. A megfelelő illeszkedés kötelező. A tömítőperemen lévő arcszőrzet megbízhatatlanná teszi a maszkot, ezért maszk használatakor nem megengedett.</li></ol>`,
+        sec3: "4. Vraag 1 (Gevaren & PBM)", q1P: "A kvarcpor akár 100-szor kisebb is lehet egy homokszemnél. Mikor kötelező légzésvédőt (EVE) viselni?",
+        q1o1: "Csak akkor, ha szabad szemmel is látom a porfelhőt.", q1o2: "Mindig, amikor port okozó betonmegmunkálás folyik, mivel a legveszélyesebb részecskék láthatatlanok.",
+        sec4: "5. Vraag 2 (Omgeving)", q2P: "Ön éppen nem vág semmit, de egy kollégája Ön mellett a tárolóban port okozó betonmegmunkálást végez. Mit tesz?",
+        q2o1: "Semmit, nem én dolgozom a géppel, így nem vagyok veszélyben.", q2o2: "Szigorúan figyelem a környezetemet, távolságot tartok, és azonnal felveszem a légzésvédőmet.",
+        sec5: "6. Vraag 3 (Elkaar Aanspreken)", q3P: "Észreveszi, hogy egy kollégája a tárolóban betont munkál meg, de elfelejtette felvenni a légzésvédőjét (EVE). Mit tesz?",
+        q3o1: "Nem szólok semmit. Ez az ő saját felelőssége és az ő egészsége.", q3o2: "Közvetlenül megszólítom a kollégámat, emlékeztetem a veszélyre, és kérem, hogy vegye fel a légzésvédőt. A biztonság közös ügyünk.",
+        labelComments: "<strong>Van kérdése vagy észrevétele a témával kapcsolatban?</strong><br>Kérdésére egy héten belül válaszol a KAM osztály.",
+        btn: "Toolbox Aláírása", correct: "✓ Helyes!", wrong: "❌ Helytelen. Kérjük, gondolja át újra a biztonsági szabályokat.", alert: "Toolbox sikeresen aláírva!"
+    },
+    pt: {
+        title: "Toolbox: Perigos da Poeira de Sílica", subtitle: "⚠️ INSTRUÇÃO DE SEGURANÇA OBRIGATÓRIA ⚠️",
+        sec1: "1. Seus Dados", labelName: "Nome completo:", labelDept: "Localização:",
+        sec2: "2. Assistir ao Vídeo", videoP: "Clique no botão abaixo para abrir e assistir ao vídeo sobre poeira de sílica no YouTube. Isso é obrigatório para responder às perguntas.",
+        videoBtn: "Conscious Safety Toolbox: 'Silica Dust' (2026)",
+        sec3_new: "3. Poeira de Sílica na Lammers Beton",
+        body_new: `<p>A poeira de sílica é liberada em nossas instalações durante o processamento a seco de concreto endurecido: serrar, esmerilhar, perfurar, fresar e no acabamento ou reparo de elementos, inclusive no pátio de estocagem. Varrer a seco e soprar com ar comprimido também lançam poeira no ar. A poeira de sílica é cancerígena e praticamente invisível.</p>
+                   <p>O limite legal é de 0,075 mg/m3 de sílica respirável, medido como média ao longo de uma jornada de trabalho de 8 horas. Espera-se que este valor seja reduzido. O ponto de partida é, portanto, sempre: manter a exposição o mais baixa possível e visar o zero. Para ilustrar a rapidez com que esse limite é ultrapassado: varrer a seco já resulta em uma exposição 13 vezes maior do que o limite, perfurar 33 vezes, e fresar, lixar ou serrar até 200 vezes o valor limite.</p>
+                   <p><strong>Nossas medidas, nesta ordem:</strong></p>
+                   <ol><li><strong>Limitar operações.</strong> Dimensionamento e aberturas são feitos na fôrma tanto quanto possível, não serrados ou perfurados posteriormente.</li><li><strong>Trabalhar a úmido ou com exaustão.</strong> Use ferramentas com suprimento de água ou extração de poeira integrada. A limpeza é feita com aspirador industrial, nunca varrendo a seco ou com ar comprimido.</li><li><strong>Manter distância.</strong> Realize trabalhos que gerem poeira o mais longe possível dos colegas.</li><li><strong>Proteção respiratória.</strong> No processamento a seco ou quando a exaustão for insuficiente, use a máscara com filtro P3 fornecida pela Lammers Beton. O ajuste correto é obrigatório. Pelos faciais na borda de vedação tornam a máscara não confiável e, por isso, não são permitidos ao usar a máscara.</li></ol>`,
+        sec3: "4. Pergunta 1 (Perigos e EPI)", q1P: "A poeira de sílica é até 100 vezes menor que um grão de areia. Quando é obrigatório usar proteção respiratória (EPI)?",
+        q1o1: "Apenas se eu puder ver as nuvens de poeira a olho nu.", q1o2: "Sempre que houver processamento de concreto que libere poeira, pois as partículas mais perigosas são invisíveis.",
+        sec4: "5. Pergunta 2 (Ambiente)", q2P: "Você não está cortando, mas um colega ao seu lado no pátio está processando concreto e liberando poeira. O que você faz?",
+        q2o1: "Nada, eu não estou operando a máquina, então não corro risco.", q2o2: "Presto muita atenção ao meu redor, mantenho distância e coloco imediatamente a minha proteção respiratória.",
+        sec5: "6. Pergunta 3 (Chamar a atenção)", q3P: "Você nota que um colega no pátio está processando concreto, mas esqueceu de colocar a proteção respiratória (EPI). O que você faz?",
+        q3o1: "Não digo nada. A responsabilidade e a saúde são dele.", q3o2: "Falo diretamente com o meu colega, lembro-o do perigo e peço para ele colocar a proteção respiratória. Segurança fazemos juntos.",
+        labelComments: "<strong>Tem dúvidas ou comentários sobre este assunto?</strong><br>Sua pergunta será respondida dentro de uma semana pelo departamento de QHSE.",
+        btn: "Assinar Toolbox", correct: "✓ Correto!", wrong: "❌ Incorreto. Por favor, reconsidere as regras de segurança.", alert: "Toolbox assinado com sucesso!"
+    }
+};
+
+let currentLang = 'nl';
+
+function switchLanguage(lang) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    document.getElementById('txt-title').innerText = docData[lang].title;
+    document.getElementById('txt-subtitle').innerText = docData[lang].subtitle;
+    document.getElementById('txt-sec1').innerText = docData[lang].sec1;
+    document.getElementById('txt-label-name').innerText = docData[lang].labelName;
+    document.getElementById('txt-label-dept').innerText = docData[lang].labelDept;
+    document.getElementById('txt-sec2').innerText = docData[lang].sec2;
+    document.getElementById('txt-video-p').innerText = docData[lang].videoP;
+    document.getElementById('txt-video-btn').innerText = docData[lang].videoBtn;
+    document.getElementById('txt-sec3-new').innerText = docData[lang].sec3_new;
+    document.getElementById('txt-body-new').innerHTML = docData[lang].body_new;
+    document.getElementById('txt-sec3').innerText = docData[lang].sec3;
+    document.getElementById('txt-q1-p').innerText = docData[lang].q1P;
+    document.getElementById('txt-q1-o1').innerText = docData[lang].q1o1;
+    document.getElementById('txt-q1-o2').innerText = docData[lang].q1o2;
+    document.getElementById('txt-sec4').innerText = docData[lang].sec4;
+    document.getElementById('txt-q2-p').innerText = docData[lang].q2P;
+    document.getElementById('txt-q2-o1').innerText = docData[lang].q2o1;
+    document.getElementById('txt-q2-o2').innerText = docData[lang].q2o2;
+    document.getElementById('txt-sec5').innerText = docData[lang].sec5;
+    document.getElementById('txt-q3-p').innerText = docData[lang].q3P;
+    document.getElementById('txt-q3-o1').innerText = docData[lang].q3o1;
+    document.getElementById('txt-q3-o2').innerText = docData[lang].q3o2;
+    document.getElementById('txt-label-comments').innerHTML = docData[lang].labelComments;
+    document.getElementById('submitBtn').innerText = docData[lang].btn;
+
+    checkQuiz();
+}
+
+function checkQuiz() {
+    const name = document.getElementById('emp_name').value.trim();
+    const dept = document.getElementById('emp_dept').value;
+    
+    const q1Opts = document.getElementsByName('q1');
+    const q2Opts = document.getElementsByName('q2');
+    const q3Opts = document.getElementsByName('q3');
+    
+    let q1Val = "", q2Val = "", q3Val = "";
+    for (const o of q1Opts) { if (o.checked) q1Val = o.value; }
+    for (const o of q2Opts) { if (o.checked) q2Val = o.value; }
+    for (const o of q3Opts) { if (o.checked) q3Val = o.value; }
+
+    const f1 = document.getElementById('feedback-q1');
+    const f2 = document.getElementById('feedback-q2');
+    const f3 = document.getElementById('feedback-q3');
+    
+    let q1Correct = false, q2Correct = false, q3Correct = false;
+
+    if (q1Val !== "") {
+        if (q1Val === "correct") { f1.innerText = docData[currentLang].correct; f1.className = "feedback correct"; q1Correct = true; }
+        else { f1.innerText = docData[currentLang].wrong; f1.className = "feedback wrong"; }
+    }
+    if (q2Val !== "") {
+        if (q2Val === "correct") { f2.innerText = docData[currentLang].correct; f2.className = "feedback correct"; q2Correct = true; }
+        else { f2.innerText = docData[currentLang].wrong; f2.className = "feedback wrong"; }
+    }
+    if (q3Val !== "") {
+        if (q3Val === "correct") { f3.innerText = docData[currentLang].correct; f3.className = "feedback correct"; q3Correct = true; }
+        else { f3.innerText = docData[currentLang].wrong; f3.className = "feedback wrong"; }
+    }
+
+    const btn = document.getElementById('submitBtn');
+    if (name.length > 3 && dept !== "" && q1Correct && q2Correct && q3Correct) {
+        btn.className = "btn active"; btn.disabled = false;
+    } else {
+        btn.className = "btn"; btn.disabled = true;
+    }
+}
+
+function submitToolbox() {
+    const name = document.getElementById('emp_name').value.trim();
+    const dept = document.getElementById('emp_dept').value;
+    const commentsText = document.getElementById('emp_comments').value.trim();
+    const timestamp = new Date().toLocaleString('nl-NL');
+
+    const logData = {
+        time: timestamp,
+        location: dept,
+        worker: name,
+        language: currentLang.toUpperCase(),
+        toolbox_subject: "Kwartsstof",
+        comments: commentsText
+    };
+
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbypjgO9Y8AG4O6lPJ_tm2pMPK1R1L5B_6LoNQrfW04AJqyJBZqh65-oT4b1T1zHqmL8/exec"; 
+
+    fetch(webAppUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(logData)
+    })
+    .then(() => {
+        document.getElementById('emp_name').value = "";
+        document.getElementById('emp_dept').value = "";
+        document.getElementById('emp_comments').value = "";
+        document.getElementsByName('q1').forEach(o => o.checked = false);
+        document.getElementsByName('q2').forEach(o => o.checked = false);
+        document.getElementsByName('q3').forEach(o => o.checked = false);
+        document.getElementById('feedback-q1').style.display = 'none';
+        document.getElementById('feedback-q2').style.display = 'none';
+        document.getElementById('feedback-q3').style.display = 'none';
+
+        checkQuiz();
+        alert(docData[currentLang].alert);
+    })
+    .catch(err => {
+        alert("Fout bij opslaan / Error saving data");
+        console.error(err);
+    });
+}
+</script>
+</body>
+</html>
